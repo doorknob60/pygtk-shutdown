@@ -1,0 +1,18 @@
+Requirements:
+* Python 2.4+
+* PyGTK 2.6+
+* gksu
+
+To install this program, copy it to a location in the system $PATH, or store
+it elsewhere and create a symbolic link to it in $PATH. The program itself
+does not require any more installation.
+
+You will need to add the users you wish to grant permission to use this
+program to /etc/sudoers; see sudoers(5). It is recommended you give your user
+permission to use the /sbin/shutdown program without a password, though not
+necessary (but the user will be prompted for a password). In any case, your
+users need permission to execute /sbin/shutdown through sudo, with or without
+a password.
+
+An alternative would be to give /sbin/shutdown SUID root, though this is far
+less secure than using the sudoers method.
