@@ -1,0 +1,88 @@
+--- pygtk-shutdown	2011-06-12 20:09:18.000000000 -0700
++++ pygtk-shutdown-both	2011-08-02 16:41:04.000000000 -0700
+@@ -40,13 +40,17 @@
+ 
+         self.frame1 = gtk.Frame()
+         self.frame2 = gtk.Frame()
++        self.frame3 = gtk.Frame()
+ 
+         self.layoutBox = gtk.VBox(False, 5)
+         self.layoutBox.set_border_width(5)
+         self.buttonsBox1 = gtk.HBox(True, 5)
+         self.buttonsBox2 = gtk.HBox(True, 5)
++        self.buttonsBox3 = gtk.HBox(True, 5)
+         self.buttonsBox1.set_border_width(5)
++        self.buttonsBox2 = gtk.HBox(True, 5)
+         self.buttonsBox2.set_border_width(5)
++        self.buttonsBox3.set_border_width(5)
+         self.cancelButtonAlignment = gtk.Alignment(1.0, 0.5)
+ 
+         self.logoutButton = gtk.Button("Logout")
+@@ -64,16 +68,30 @@
+         ico.set_from_icon_name("gnome-shutdown", iconsize)
+         self.haltButton.set_image(ico)
+ 
++        self.suspendButton = gtk.Button("Suspend")
++        ico = gtk.Image()
++        ico.set_from_icon_name("gnome-session-suspend", iconsize)
++        self.suspendButton.set_image(ico)
++
++        self.hibernateButton = gtk.Button("Hibernate")
++        ico = gtk.Image()
++        ico.set_from_icon_name("gnome-session-hibernate", iconsize)
++        self.hibernateButton.set_image(ico)
++
+         self.cancelButton = gtk.Button(None, gtk.STOCK_CANCEL)
+ 
+         self.buttonsBox1.pack_start(self.logoutButton)
+         self.buttonsBox2.pack_start(self.restartButton)
+         self.buttonsBox2.pack_start(self.haltButton)
++        self.buttonsBox3.pack_start(self.suspendButton)
++        self.buttonsBox3.pack_start(self.hibernateButton)
+         self.cancelButtonAlignment.add(self.cancelButton)
+         self.frame1.add(self.buttonsBox1)
+         self.frame2.add(self.buttonsBox2)
++        self.frame3.add(self.buttonsBox3)
+         self.layoutBox.pack_start(self.frame1)
+         self.layoutBox.pack_start(self.frame2)
++        self.layoutBox.pack_start(self.frame3)
+         self.layoutBox.pack_start(self.cancelButtonAlignment)
+ 
+         self.window.add(self.layoutBox)
+@@ -91,6 +109,8 @@
+         self.logoutButton.connect("clicked", self.logout)
+         self.restartButton.connect("clicked", self.reboot)
+         self.haltButton.connect("clicked", self.shutdown)
++        self.suspendButton.connect("clicked", self.suspend)
++        self.hibernateButton.connect("clicked", self.hibernate)
+ 
+     def main(self):
+         gtk.main()
+@@ -102,10 +122,16 @@
+         self.callcmd(LOGOUT_COMMAND)
+ 
+     def shutdown(self, widget = None, data = None):
+-        self.callcmd("/sbin/shutdown -h now")
++        self.callcmd("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop")
+ 
+     def reboot(self, widget = None, data = None):
+-        self.callcmd("/sbin/shutdown -r now")
++        self.callcmd("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart")
++
++    def suspend(self, widget = None, data = None):
++        self.callcmd("dbus-send --print-reply --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Suspend")
++
++    def hibernate(self, widget = None, data = None):
++        self.callcmd("dbus-send --print-reply --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Hibernate")
+ 
+     def callcmd(self, cmd):
+         proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr =
+@@ -123,7 +149,7 @@
+                 subprocess.Popen("kill -9 " + str(proc.pid), shell = True)
+ 
+         if status != 0:
+-            subprocess.Popen("gksudo -- " + cmd, shell = True)
++            subprocess.Popen(cmd, shell = True)
+ 
+         self.terminate()
+ 

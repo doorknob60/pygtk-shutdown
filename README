@@ -10,7 +10,7 @@ window manager. Alternatively, you can leave LOGOUT_COMMAND unset and specify
 the command as an argument to pygtk-shutdown. In this case, there is no
 need to escape the command, as it will be taken as a literal string.
 
-If you want support for suspend and hibernate via pm-utils, apply the pm-utils patch. If you want support for shutting down via HAL, apply the HAL patch (note: HAL is considered outdated now, so this is unsupported, but you can use it if you know what you're doing)
+There are included patches for support for consolekit, consolekit+upower, or pm-utils
 
 Notice: in order to use pygtk-shutdown, the user you are calling it as
 must have sudo permission to execute /sbin/shutdown. See INSTALL and

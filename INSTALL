@@ -1,7 +1,12 @@
 Requirements:
 * Python 2.4+
 * PyGTK 2.6+
-* gksu
+* gksu (not needed if you use the consolekit patch)
+
+Optional Requirements:
+* consolekit (if you want to use consolekit rather than /sbin/shutdown and gksudo)
+* pm-utils (if you want suspend and hibernate support but no consolekit)
+* upower (if you want suspend and hibernate support with consolekit)
 
 To install this program, copy it to a location in the system $PATH, or store
 it elsewhere and create a symbolic link to it in $PATH. The program itself
@@ -14,5 +19,5 @@ necessary (but the user will be prompted for a password). In any case, your
 users need permission to execute /sbin/shutdown through sudo, with or without
 a password.
 
-An alternative would be to give /sbin/shutdown SUID root, though this is far
-less secure than using the sudoers method.
+To apply one of the patches, use the patch utility:
+patch pygtk-shutdown PATCHNAME.patch

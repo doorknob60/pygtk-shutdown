@@ -1,0 +1,25 @@
+--- pygtk-shutdown	2011-06-12 20:09:18.000000000 -0700
++++ pygtk-shutdown-ck	2011-08-02 16:49:00.000000000 -0700
+@@ -102,10 +102,11 @@
+         self.callcmd(LOGOUT_COMMAND)
+ 
+     def shutdown(self, widget = None, data = None):
+-        self.callcmd("/sbin/shutdown -h now")
++        self.callcmd("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop")
+ 
+     def reboot(self, widget = None, data = None):
+-        self.callcmd("/sbin/shutdown -r now")
++        self.callcmd("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart")
++
+ 
+     def callcmd(self, cmd):
+         proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr =
+@@ -123,7 +124,7 @@
+                 subprocess.Popen("kill -9 " + str(proc.pid), shell = True)
+ 
+         if status != 0:
+-            subprocess.Popen("gksudo -- " + cmd, shell = True)
++            subprocess.Popen(cmd, shell = True)
+ 
+         self.terminate()
+ 
