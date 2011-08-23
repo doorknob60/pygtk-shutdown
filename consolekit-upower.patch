@@ -1,6 +1,6 @@
---- pygtk-shutdown	2011-06-12 20:09:18.000000000 -0700
-+++ pygtk-shutdown-both	2011-08-02 16:41:04.000000000 -0700
-@@ -40,13 +40,17 @@
+--- pygtk-shutdown	2011-08-22 19:18:04.000000000 -0700
++++ pygtk-shutdown-ck-up	2011-08-22 19:19:40.000000000 -0700
+@@ -37,13 +37,17 @@
  
          self.frame1 = gtk.Frame()
          self.frame2 = gtk.Frame()
@@ -18,7 +18,7 @@
          self.cancelButtonAlignment = gtk.Alignment(1.0, 0.5)
  
          self.logoutButton = gtk.Button("Logout")
-@@ -64,16 +68,30 @@
+@@ -61,16 +65,30 @@
          ico.set_from_icon_name("gnome-shutdown", iconsize)
          self.haltButton.set_image(ico)
  
@@ -49,7 +49,7 @@
          self.layoutBox.pack_start(self.cancelButtonAlignment)
  
          self.window.add(self.layoutBox)
-@@ -91,6 +109,8 @@
+@@ -88,6 +106,8 @@
          self.logoutButton.connect("clicked", self.logout)
          self.restartButton.connect("clicked", self.reboot)
          self.haltButton.connect("clicked", self.shutdown)
@@ -58,31 +58,25 @@
  
      def main(self):
          gtk.main()
-@@ -102,10 +122,16 @@
-         self.callcmd(LOGOUT_COMMAND)
+@@ -100,11 +120,19 @@
+         gtk.main_quit()
  
      def shutdown(self, widget = None, data = None):
--        self.callcmd("/sbin/shutdown -h now")
-+        self.callcmd("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop")
+-        os.system("/usr/bin/gksudo \"/sbin/shutdown -h now\" &")
++        os.system("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop &")
+         gtk.main_quit()
  
      def reboot(self, widget = None, data = None):
--        self.callcmd("/sbin/shutdown -r now")
-+        self.callcmd("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart")
+-        os.system("/usr/bin/gksudo \"/sbin/shutdown -r now\" &")
++        os.system("dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart &")
++        gtk.main_quit()
 +
 +    def suspend(self, widget = None, data = None):
-+        self.callcmd("dbus-send --print-reply --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Suspend")
++        os.system("dbus-send --print-reply --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Suspend &")
++        gtk.main_quit()
 +
 +    def hibernate(self, widget = None, data = None):
-+        self.callcmd("dbus-send --print-reply --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Hibernate")
++        os.system("dbus-send --print-reply --system --dest=org.freedesktop.UPower /org/freedesktop/UPower org.freedesktop.UPower.Hibernate &")
+         gtk.main_quit()
  
-     def callcmd(self, cmd):
-         proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr =
-@@ -123,7 +149,7 @@
-                 subprocess.Popen("kill -9 " + str(proc.pid), shell = True)
- 
-         if status != 0:
--            subprocess.Popen("gksudo -- " + cmd, shell = True)
-+            subprocess.Popen(cmd, shell = True)
- 
-         self.terminate()
- 
+ def main():

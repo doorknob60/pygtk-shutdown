@@ -22,11 +22,8 @@
 import pygtk
 pygtk.require("2.0")
 import gtk
-
 import os
 import sys
-import subprocess
-import time
 
 LOGOUT_COMMAND = "openbox --exit"
 
@@ -99,33 +96,16 @@ class ShutdownDialog:
         gtk.main_quit()
 
     def logout(self, widget = None, data = None):
-        self.callcmd(LOGOUT_COMMAND)
+        os.system(LOGOUT_COMMAND)
+        gtk.main_quit()
 
     def shutdown(self, widget = None, data = None):
-        self.callcmd("/sbin/shutdown -h now")
+        os.system("/usr/bin/gksudo \"/sbin/shutdown -h now\" &")
+        gtk.main_quit()
 
     def reboot(self, widget = None, data = None):
-        self.callcmd("/sbin/shutdown -r now")
-
-    def callcmd(self, cmd):
-        proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr =
-                subprocess.PIPE, shell = True)
-        starttime = time.time() * 1000
-
-        status = proc.poll()
-        while status is None and time.time() * 1000 < starttime + 5000:
-            status = proc.poll()
-
-        if status is None:
-            if sys.hexversion >= 0x02060000:
-                proc.kill()
-            else:
-                subprocess.Popen("kill -9 " + str(proc.pid), shell = True)
-
-        if status != 0:
-            subprocess.Popen("gksudo -- " + cmd, shell = True)
-
-        self.terminate()
+        os.system("/usr/bin/gksudo \"/sbin/shutdown -r now\" &")
+        gtk.main_quit()
 
 def main():
     shutdownDialog = ShutdownDialog()
